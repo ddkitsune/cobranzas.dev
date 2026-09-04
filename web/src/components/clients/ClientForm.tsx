@@ -3,15 +3,23 @@ import { guardarCliente } from '../../lib/clients'
 import { listarTipos } from '../../lib/clientTypes'
 import type { Cliente, TipoCliente } from '../../lib/types'
 
-const VACIAS = {
-  nombre: '', cedula: '', telefono: '', direccion: '',
-  forma_entrada: '' as '' | 'llave' | 'control', casa: '', nota: '', client_type_id: '',
+type FormState = {
+  nombre: string; cedula: string; telefono: string; direccion: string
+  forma_entrada: string; casa: string; nota: string; client_type_id: string
+}
+
+function aForm(c: Cliente | null): FormState {
+  return {
+    nombre: c?.nombre ?? '', cedula: c?.cedula ?? '', telefono: c?.telefono ?? '',
+    direccion: c?.direccion ?? '', forma_entrada: c?.forma_entrada ?? '', casa: c?.casa ?? '',
+    nota: c?.nota ?? '', client_type_id: c?.client_type_id ?? '',
+  }
 }
 
 export default function ClientForm({ cliente, onGuardado }: {
   cliente?: Cliente | null, onGuardado: () => void
 }) {
-  const [f, setF] = useState(cliente ?? VACIAS)
+  const [f, setF] = useState<FormState>(() => aForm(cliente ?? null))
   const [tipos, setTipos] = useState<TipoCliente[]>([])
   const [error, setError] = useState('')
 
@@ -23,7 +31,11 @@ export default function ClientForm({ cliente, onGuardado }: {
 
   async function guardar() {
     try {
-      await guardarCliente({ id: cliente?.id, ...f, client_type_id: f.client_type_id || null })
+      await guardarCliente({
+        id: cliente?.id, ...f,
+        forma_entrada: (f.forma_entrada || null) as 'llave' | 'control' | null,
+        client_type_id: f.client_type_id || null,
+      })
       onGuardado()
     } catch (e) { setError((e as Error).message) }
   }

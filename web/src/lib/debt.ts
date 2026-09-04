@@ -1,7 +1,7 @@
-import type { Pago, EstadoDeuda } from './types'
+import type { EstadoDeuda } from './types'
 
 export function esSolvente(
-  pagos: Pick<Pago, 'period' | 'status'>[],
+  pagos: { period: string; status: string }[],
   periodoActual: string
 ): boolean {
   return pagos.some(
@@ -10,7 +10,7 @@ export function esSolvente(
 }
 
 export function estadoDeuda(
-  pagos: Pick<Pago, 'period' | 'status'>[],
+  pagos: { period: string; status: string }[],
   periodoActual: string
 ): EstadoDeuda {
   return esSolvente(pagos, periodoActual) ? 'solvente' : 'en_deuda'

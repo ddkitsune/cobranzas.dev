@@ -1,0 +1,5 @@
+{
+  "name": "cobranzas",
+  "private": true,
+  "workspaces": ["web", "bot"]
+}

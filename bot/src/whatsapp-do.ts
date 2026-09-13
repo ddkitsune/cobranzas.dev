@@ -75,7 +75,15 @@ export class WhatsAppDO {
     sock.ev.on('creds.update', async () => {
       await this.persist()
     })
-    sock.ev.on('connection.update', ({ connection, lastDisconnect }) => {
+    sock.ev.on('connection.update', ({ connection, lastDisconnect, qr }) => {
+      if (qr) {
+        this.state.storage.put('qr', qr)
+        console.log('\n=========== WHATSAPP QR ===========')
+        console.log(`Escanea en https://localhost:8787/session o pega en https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qr)}`)
+        console.log(qr)
+        console.log('====================================\n')
+      }
+      if (connection === 'open') this.state.storage.delete('qr')
       if (connection === 'close') {
         const code = (lastDisconnect?.error as { output?: { statusCode?: number } } | undefined)?.output?.statusCode
         if (code !== DisconnectReason.loggedOut) this.sock = null
@@ -120,7 +128,18 @@ export class WhatsAppDO {
     return new Response('sent')
   }
 
-  private handleSession() {
-    return new Response('session', { headers: { 'Content-Type': 'text/plain' } })
-  }
+  private async handleSession() {
+    try {
+    await this.ensureSocket()
+    } catch (e) {
+    return new Response('Error: ' + (e as Error).message, { status: 500 })
+    }
+    const qr = await this.state.storage.get<string>('qr')
+    if (!qr) return new Response('No QR disponible', { headers: { 'Content-Type': 'text/plain' } })
+    const html = `<!doctype html><html><head><meta charset="utf-8"><title>WhatsApp QR</title></head>
+<body style="font-family:sans-serif;text-align:center;background:#0b141a;color:#e9edef">
+<h2>Escanea con WhatsApp</h2><img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(qr)}" alt="QR"/>
+</body></html>`
+    return new Response(html, { headers: { 'Content-Type': 'text/html' } })
+    }
 }

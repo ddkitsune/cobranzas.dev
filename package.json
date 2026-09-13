@@ -1,5 +1,17 @@
 {
   "name": "cobranzas",
   "private": true,
-  "workspaces": ["web", "bot"]
+  "workspaces": [
+    "web",
+    "bot"
+  ],
+  "allowScripts": {
+    "workerd@1.20250718.0": true,
+    "workerd@1.20260903.1": true,
+    "esbuild@0.28.1": true,
+    "esbuild@0.25.12": true,
+    "esbuild@0.21.5": true,
+    "@whiskeysockets/baileys@6.7.24": true,
+    "protobufjs@7.6.6": true
+  }
 }

@@ -1,7 +1,6 @@
 name = "cobranzas-bot"
 main = "src/index.ts"
-compatibility_date = "2024-11-01"
-compatibility_flags = ["nodejs_compat"]
+compatibility_date = "2026-08-04"
 
 [durable_objects]
 bindings = [{ name = "WHATSAPP_DO", class_name = "WhatsAppDO" }]
